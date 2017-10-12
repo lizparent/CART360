@@ -82,7 +82,7 @@ unsigned long startTime;
 // var to hold the note pressed
 int testNote;
 
-// vars for averageing
+// vars for averaging
 int runningAverageBuffer[RUNNING_SAMPLES];
 int nextCount = 0;
 
@@ -258,10 +258,15 @@ void live()
    offsetFrequency = getPhotoFrequency();
    // output sound
 
+if(digitalRead(NOTE_IN_PIN) == HIGH){
    //makes the tones by adding the analog reading for the photocell and the note in pin
    tone(BUZZER_PIN, analogRead(NOTE_IN_PIN) + analogRead(PHOTO_PIN), duration);
    //rest period of 100ms
    duration == 100;
+   //check if mode button is pressed
+    
+      
+      }
  
 }
 
@@ -431,9 +436,9 @@ void updateArraysWithNoteAndTimings()
 
  //
  if(MAX_NOTES <= 15) {
-  notes[note_Count] = activeFrequency;
- durations[note_Count] = timePassed;
- [noteCount] == 0;
+  //notes[note_Count] = activeFrequency;
+ //durations[note_Count] = timePassed;
+ countNotes == 0;
  }
 }
 /******************GETPHOTOFREQUENCY(): IMPLEMENT *********************************
@@ -446,19 +451,33 @@ int getPhotoFrequency()
   //IMPLEMENT
 
   //get input from photocell
-  analogRead(PHOTO_PIN);
+  
   //
-  return();
+  return(analogRead(PHOTO_PIN));
 }
 
 /******************GETRUNNINGAVERAGE(): IMPLEMENT *********************************
  * INSTRUCTIONS:
- * this function should compute the running average of the photcell value (returned from the 
+ * this function should compute the running average of the photocell value (returned from the 
  * getPhotoFrequency() function).
 **************************************************************************/
 int getRunningAverage()
 {
  //IMPLEMENT
+
+ //
+ runningAverageBuffer[nextCount] = getPhotoFrequency();
+ nextCount++;
+ if (nextCount >= RUNNING_SAMPLES){
+ nextCount = 0;
+ int currentSum= 0;
+ for(int i=0; i< RUNNING_SAMPLES; i++){
+ currentSum += runningAverageBuffer[i];
+ }
+ int averageVal = currentSum / RUNNING_SAMPLES;
+ delay(duration);
+ return(averageVal);
+}
 
 }
 /******************COLORLED(): IMPLEMENT *********************************
