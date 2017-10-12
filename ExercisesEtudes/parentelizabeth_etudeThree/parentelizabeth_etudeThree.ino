@@ -94,6 +94,7 @@ int nextCount = 0;
 void setup()
 {
   pinMode(BUTTON_MODE_PIN, INPUT);
+  Serial.begin(9600);
 }
 
 /**********************LOOP() DO NOT CHANGE *******************************
@@ -240,7 +241,7 @@ void selectMode()
 **************************************************************************/
 void reset()
 {
- countNotes == 0;
+ countNotes = 0;
   
 }
 /******************LIVE()  - RE-IMPLEMENT **************************************
@@ -392,6 +393,8 @@ void startUpTimer()
   //IMPLEMENT
   //amount of time from the start of the function
   startTime = millis();
+  timePassed = 0;
+  activeNoteButton = true;
 
 }
 /******************UPDATETIMER(): IMPLEMENT *********************************
@@ -404,6 +407,7 @@ void updateTimer()
  //IMPLEMENT
   //updates the time passed
  timePassed = millis() - startTime;
+ activeFrequency = testNote;
 
 }
 /******************PLAYCURRENTNOTE(): IMPLEMENT *********************************
@@ -418,8 +422,9 @@ void playCurrentNote()
 
     //makes the tones by adding the analog reading for the photocell and the note in pin
    tone(BUZZER_PIN, analogRead(NOTE_IN_PIN) + analogRead(PHOTO_PIN), duration);
+   delay(duration);
    //rest period of 100ms
-   duration == 100;
+   //duration == 100;
 
 }
 /******************UPDATEARRAYSWITHNOTEANDTIMINGS(): IMPLEMENT *********************************
@@ -435,11 +440,11 @@ void updateArraysWithNoteAndTimings()
  //IMPLEMENT
 
  //
- if(MAX_NOTES <= 15) {
-  //notes[note_Count] = activeFrequency;
- //durations[note_Count] = timePassed;
- countNotes == 0;
- }
+ notes[countNotes] = activeFrequency;
+    durations[countNotes] = timePassed;
+    countNotes++;
+ activeNoteButton = false;
+ timePassed = 0;
 }
 /******************GETPHOTOFREQUENCY(): IMPLEMENT *********************************
  * INSTRUCTIONS:
@@ -451,9 +456,9 @@ int getPhotoFrequency()
   //IMPLEMENT
 
   //get input from photocell
-  
+  Serial.println(analogRead(PHOTO_PIN));
   //
-  return(analogRead(PHOTO_PIN));
+  return analogRead(PHOTO_PIN) - 400;
 }
 
 /******************GETRUNNINGAVERAGE(): IMPLEMENT *********************************
@@ -504,6 +509,14 @@ void colorLED(int col)
 void playWithDuration()
 {
   //IMPLEMENT
+
+for(int i=0; i < countNotes; i++)
+  {
+  //makes the tones by adding the analog reading for the photocell and the note in pin
+   tone(BUZZER_PIN, notes[i], durations[i]);
+   delay(durations[i]);
+   delay(duration);
+  }
 }
 
 /******************PLAY(): SOLUTION: ETUDE_2 ************************************
